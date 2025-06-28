@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mode of Delivery Prediction</title>
+    <style>
+        body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #fef9f9;
+    color: #333;
+    padding: 40px;
+    max-width: 700px;
+    margin: auto;
+    border-radius: 12px;
+    background-image: url('https://i.imgur.com/YVbKMFs.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    backdrop-filter: blur(5px);
+}
+
+h1 {
+    text-align: center;
+    color: #d47fa6;
+    margin-bottom: 30px;
+}
+
+form {
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-top: 10px;
+    color: #5e5c5c;
+}
+
+input, select {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+button {
+    background-color: #ed62aa;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: #e07ab3;
+}
+
+.prediction {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 1.3em;
+    color: #4caf50;
+    font-weight: bold;
+}
+
+.field-description {
+    font-size: 0.9em;
+    color: #555;
+    padding-top: 5px;
+    margin-top: -10px;
+    margin-bottom: 10px;
+}
+
+.error-message {
+    color: red;
+    font-size: 0.85em;
+    display: none;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.bounce-icon {
+    display: inline-block;
+    animation: bounce 1s ease infinite;
+    font-size: 1.5em;
+    margin-right: 10px;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(76, 175, 80, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
+}
+
+.highlight-result {
+    animation: pulse 2s infinite;
+    background-color: #eaffea;
+    border: 2px solid #b2fab4;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 25px;
+    text-align: center;
+    font-size: 1.2em;
+}
+
+.result-box {
+    background-color: rgba(255,255,255,0.95);
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 30px;
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+}
+
+.result-box ul {
+    list-style: none;
+    padding: 0;
+}
+
+.result-box li {
+    margin-bottom: 8px;
+}
+    </style>
+</head>
+<body>
+    <h1>👶 Mode of Delivery Predictor</h1>
+
+    <form name="deliveryForm" id="deliveryForm">
+        <label>Maternal Age : between 20 and 60</label>
+        <input type="number" name="maternal_age" min="20" max="60" required>
+        <div class="field-description">Age of the mother in years.</div>
+        <div class="error-message" id="maternal_age_error">Please enter a valid age between 10 and 60.</div>
+ 
+        <label>Gestational Age (weeks) : between 20 and 45</label>
+        <input type="number" name="gestational_age" min="20" max="45" required>
+        <div class="field-description">Number of weeks the pregnancy has lasted.</div>
+        <div class="error-message" id="gestational_age_error">Please enter a value between 20 and 45 weeks.</div>
+
+        <label>Fetal Heart Rate (bpm) : between 90 and 200</label>
+        <input type="number" name="fetal_heart_rate" min="90" max="200" required>
+        <div class="field-description">Beats per minute recorded for the baby.</div>
+        <div class="error-message" id="fetal_heart_rate_error">Heart rate should be between 90 and 200 bpm.</div>
+
+        <label>Maternal Blood Pressure (mmHg) : between 80 and 200</label>
+        <input type="number" name="maternal_blood_pressure" min="80" max="200" required>
+        <div class="field-description">Blood pressure measured during labor.</div>
+        <div class="error-message" id="maternal_blood_pressure_error">Enter value between 80 and 200 mmHg.</div>
+
+        <label>Previous C-Section :</label>
+        <select name="previous_c_section">
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+        </select>
+        <div class="field-description">Has the mother had a cesarean delivery in the past?</div>
+
+        <label>Birth Weight (grams) : between 500 and 6000</label>
+        <input type="number" name="birth_weight" min="500" max="6000" required>
+        <div class="field-description">Estimated or actual birth weight of the baby in grams.</div>
+        <div class="error-message" id="birth_weight_error">Please enter a value between 500 and 6000 grams.</div>
+
+        <label>Labor Induced :</label>
+        <select name="labor_induced">
+            <option value="No">No</option> 
+            <option value="Yes">Yes</option>
+        </select>
+        <div class="field-description">Was labor induced medically?</div>
+
+        <button type="submit">Predict Mode of Delivery</button>
+    </form>
+
+    <div id="result" style="display: none;">
+        <div class="result-box" id="detailsBox"></div>
+        <div class="highlight-result" id="predictionBox"></div>
+    </div>
+
+    <script>
+        function validateForm() {
+            let valid = true;
+            const fields = [
+                { name: 'maternal_age', min: 10, max: 60 },
+                { name: 'gestational_age', min: 20, max: 45 },
+                { name: 'fetal_heart_rate', min: 90, max: 200 },
+                { name: 'maternal_blood_pressure', min: 80, max: 200 },
+                { name: 'birth_weight', min: 500, max: 6000 }
+            ];
+
+            fields.forEach(field => {
+                const input = document.forms["deliveryForm"][field.name];
+                const errorMsg = document.getElementById(field.name + "_error");
+                if (input.value === "" || isNaN(input.value) || input.value < field.min || input.value > field.max) {
+                    errorMsg.style.display = "block";
+                    valid = false;
+                } else {
+                    errorMsg.style.display = "none";
+                }
+            });
+
+            return valid;
+        }
+
+        document.getElementById("deliveryForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+
+            if (!validateForm()) return;
+
+            const form = e.target;
+            const data = {
+                maternal_age: form.maternal_age.value,
+                gestational_age: form.gestational_age.value,
+                fetal_heart_rate: form.fetal_heart_rate.value,
+                maternal_blood_pressure: form.maternal_blood_pressure.value,
+                previous_c_section: form.previous_c_section.value,
+                birth_weight: form.birth_weight.value,
+                labor_induced: form.labor_induced.value,
+            };
+
+            // Dummy prediction logic – replace with actual ML prediction call
+            const prediction = (data.previous_c_section === "Yes" || data.birth_weight > 4000) ? "Cesarean" : "Normal Vaginal Delivery";
+
+            const detailsBox = document.getElementById("detailsBox");
+            const predictionBox = document.getElementById("predictionBox");
+
+            detailsBox.innerHTML = `
+                <h2>📋 Entered Details</h2>
+                <ul>
+                    <li><strong>Maternal Age:</strong> ${data.maternal_age}</li>
+                    <li><strong>Gestational Age:</strong> ${data.gestational_age} weeks</li>
+                    <li><strong>Fetal Heart Rate:</strong> ${data.fetal_heart_rate} bpm</li>
+                    <li><strong>Maternal Blood Pressure:</strong> ${data.maternal_blood_pressure} mmHg</li>
+                    <li><strong>Previous C-Section:</strong> ${data.previous_c_section}</li>
+                    <li><strong>Birth Weight:</strong> ${data.birth_weight} g</li>
+                    <li><strong>Labor Induced:</strong> ${data.labor_induced}</li>
+                </ul>
+            `;
+
+            predictionBox.innerHTML = `
+                <span class="bounce-icon">✅</span>
+                🍼 Predicted Mode of Delivery: <strong>${prediction}</strong>
+            `;
+
+            document.getElementById("result").style.display = "block";
+
+            // Reset form fields
+            form.reset();
+
+            // Scroll to result section
+            document.getElementById("result").scrollIntoView({ behavior: "smooth" });
+        });
+    </script>
+</body>
+</html>
